@@ -8,33 +8,35 @@
 <script type='text/javascript'>
 var RESPONSE = {};
 
-function doRequest($url, $obj) {
+function doRequest(url, obj) {
     $.ajax({
         type: 'POST',
-        url: "http://localhost:8000" + $url,
-        data: $obj,
+        url: "http://localhost:8000" + url,
+        data: obj,
         crossDomain: 'true',
         error: function(x,y,z){ alert('An error has occurred:\n' + JSON.stringify(x) + '\n' + y + '\n' + z); },
-        success: function(data) { alert("meh"); }
+        success: function(data) {
+		    $.extend(RESPONSE, data);
+        }
     });
 }
 
+/* API */
 function connect() {
-    doRequest("/connect", "{}");
+    doRequest("/connect", {});
 }
 
-function game_move($id, $auth, $game, $column, $row) {
-    doRequest("/game/move", {'ID' : $id,'AUTH' : $auth,'GAMEID' : $game,'COMMAND' : ['MOVE',$column,$row]});
+function game_move($id, auth, game, column, row) {
+    doRequest("/game/move", {'ID': id, 'AUTH': auth, 'GAMEID': game, 'COMMAND': ['MOVE', column, row]});
 }
 
-function game_status($id, $auth, $game) {
-    doRequest("/game/status", {"ID" : $id,"AUTH" : $auth,"GAMEID" : $game});
+function game_status(id, auth, game) {
+    doRequest("/game/status", {"ID": id, "AUTH": auth, "GAMEID": game});
 }
 
 $(document).ready(function () {
     connect();
 });
-
 </script>
 </body>
 </html>
