@@ -6,30 +6,41 @@
 <body>
 
 <script type='text/javascript'>
+/*global $, document*/
+
 var RESPONSE = {};
 
+function print(str) {
+    $('body').append("<p>" + str + "</p>");
+}
+
 function doRequest(url, obj, callback) {
-    $('body').append("<p>Sending Request: " + JSON.stringify(obj) + "</p>");
+    print("Sending Request: " + JSON.stringify(obj));
     $.ajax({
         type: 'POST',
         url: "http://localhost:8000" + url,
         data: obj,
         crossDomain: 'true',
-        error: function(x,y,z){ alert('An error has occurred:\n' + JSON.stringify(x) + '\n' + y + '\n' + z); },
-        success: function(data) {
-		    $('body').append("<p>Received Request: " + data + "</p>");
-		    $.extend(RESPONSE, $.parseJSON(data));
-			callback();
+        error: function (x, y, z) { print('Received Invalid Response:' + JSON.stringify(x) + y + z); },
+        success: function (data) {
+            print("Received Response: " + data);
+            $.extend(RESPONSE, $.parseJSON(data));
+            callback();
         }
     });
 }
 
-/* API */
-function connect() {
-    doRequest("/connect", {}, function() { $('body').append("<p>Connected: ID=" + RESPONSE['ID'] + "</p>"); });
+/* States */
+function connected() {
+    print("Connected: ID=" + RESPONSE['ID']);
 }
 
-function game_move($id, auth, game, column, row) {
+/* Transitions */
+function connect() {
+    doRequest("/connect", {}, connected);
+}
+
+function game_move(id, auth, game, column, row) {
     doRequest("/game/move", {'ID': id, 'AUTH': auth, 'GAMEID': game, 'COMMAND': ['MOVE', column, row]});
 }
 
